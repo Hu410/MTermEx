@@ -1,0 +1,58 @@
+#!/system/bin/sh
+
+lib_dir=`dirname "$0"`
+
+# echo "\$HOME -> $HOME"
+
+# termux环境根目录
+termux_dir=$HOME/termux
+
+if [ ! -e "$termux_dir" ]; then
+	#解压
+	$lib_dir/busybox tar -xzvf $lib_dir/libtermux.so -C $HOME
+	chmod -R 777 $termux_dir
+fi
+
+# 指定 loader
+export PROOT_LOADER=$lib_dir/libLoader.so
+
+BASEDIR=$termux_dir
+# 设置 缓存区
+export PROOT_TMP_DIR=$BASEDIR/cache
+
+ld_config_txt=$PROOT_TMP_DIR/ld.config.txt
+
+if [ ! -e "$ld_config_txt" ]; then
+  cp /linkerconfig/ld.config.txt $ld_config_txt
+fi
+
+export PATH=/data/data/com.termux/files/usr/bin
+export SHELL=/data/data/com.termux/files/usr/bin/bash
+export PREFIX=/data/data/com.termux/files/usr
+export TERMUX_IS_DEBUGGABLE_BUILD=1
+export TERMUX_MAIN_PACKAGE_FORMAT=debian
+export TERMUX__HOME=/data/data/com.termux/files/home
+export TERMUX_VERSION=0.118.2
+export TERMUX__PREFIX=/data/data/com.termux/files/usr
+export TERMUX_APP__BUILD_DATA_DIR=/data/data/com.termux
+export TERMUX_APP__LEGACY_DATA_DIR=/data/data/com.termux
+export TERMUX__ROOTFS=/data/data/com.termux/files
+
+export HOME=/data/data/com.termux/files/home
+export TERMUX_APK_RELEASE=UNKNOWN
+export TMPDIR=/data/data/com.termux/files/usr/tmp
+
+export PATH=/data/data/com.termux/files/usr/bin
+export TERMUX_APP__DATA_DIR=/data/user/0/com.termux
+export _=/data/data/com.termux/files/usr/bin/env
+# export LD_PRELOAD=$BASEDIR/files/usr/lib/libtermux-exec-ld-preload.so
+
+unset LD_LIBRARY_PATH
+unset LD_PRELOAD
+
+$lib_dir/libproot.so \
+			--rootfs=/ \
+			--link2symlink \
+			--bind=$PROOT_TMP_DIR:/linkerconfig \
+			--bind=$BASEDIR:/data/data/com.termux \
+			$TERMUX__ROOTFS/usr/bin/login "$@"
