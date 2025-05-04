@@ -3,7 +3,13 @@ apply plugin: "com.android.application"
 android {
 	buildToolsVersion "34.0.0"
 	compileSdkVersion 34
-	
+   
+	sourceSets {
+       main {
+		   resources.srcDirs += ['src/main/java']
+        }
+    }
+
 	namespace "bin.mt.termex"
 	defaultConfig {
 		applicationId "bin.mt.termex"
