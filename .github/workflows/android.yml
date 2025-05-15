@@ -29,7 +29,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew assembleDebug
     - name: Releasing using Hub
-      uses: sangatdesai/release-apk@main
+      uses: Hu410/MTermEx@main
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         APP_FOLDER: app
